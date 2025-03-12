@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<header>
+    <h1>Blogs & News</h1>
+    <p>Your source for the latest updates and stories</p>
+</header>
+<div class="navbar">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="nav-links">
+        <a href="#" class="active">Latest</a>
+        <a href="https://viora4.netlify.app/">Home</a>
+        <a href="https://viora4-news-blogs.netlify.app/">News</a>
+        <a href="https://viora4-blogs.netlify.app/">Blogs</a>
+        <a href="https://nouman007pro.github.io/privacy.github.io/">Privacy</a>
+        <a href="#"></a>
+        <a href="#"></a>
+        <a href="#"></a>
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const nav = document.querySelector('.nav-links');
+        nav.style.display = (nav.style.display === 'flex') ? 'none' : 'flex';
+    }
+</script>
+
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        header  {
+      background: #1E3A8A;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .navbar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 2px solid #ddd;
+            background: #fff;
+            position: relative;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+        .nav-links a.active {
+            font-weight: bold;
+            border-bottom: 2px solid black;
+            padding-bottom: 3px;
+        }
+        .nav-links a:hover {
+            color: black;
+        }
+
+        /* Toggle button (hidden by default) */
+        .menu-toggle {
+            display: none;
+            font-size: 22px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        /* Mobile view */
+        @media screen and (max-width: 600px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                text-align: center;
+                width: 100%;
+                position: absolute;
+                top: 50px;
+                left: 0;
+                background: #fff;
+                border-top: 1px solid #ddd;
+                padding: 10px 0;
+            }
+            .nav-links a {
+                padding: 10px;
+                display: block;
+            }
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+
+        .card {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+          
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .blog-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .blog-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .blog-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .blog-text {
+            font-size: 14px;
+            color: #555;
+        }
+        .read-more {
+            display: block;
+            text-align: center;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            margin-top: auto;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="slide-box">
+        <!-- News articles will be inserted here -->
+    </div>
+
+    <script>
+      const apiKeys = [
+    "pub_74064635f37d1fb30faadb5a77cff43b4b744",
+    "",
+    ""
+];
+
+let currentKeyIndex = 0;
+
+async function fetchNews() {
+    let success = false;
+
+    while (!success && currentKeyIndex < apiKeys.length) {
+        const apiKey = apiKeys[currentKeyIndex];
+        const url = `https://newsdata.io/api/1/news?apikey=pub_74064635f37d1fb30faadb5a77cff43b4b744 `;
+    
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("API limit reached");
+
+            const data = await response.json();
+            if (!data.results) throw new Error("Invalid response");
+
+            displayNews(data.results);
+            success = true;
+        } catch (error) {
+            console.error(`Error with API key ${apiKey}:`, error);
+            currentKeyIndex++;
+        }
+    }
+
+    if (!success) console.error("All API keys failed!");
+}
+
+function displayNews(articles) {
+    const card = document.getElementById("slide-box");
+    card.innerHTML = "";
+    articles.slice(0, 20).forEach(article => {
+        const blogItem = document.createElement("div");
+        blogItem.classList.add("blog-item");
+
+        const title = article.title.split(" ").slice(0, 20).join(" ") + "...";
+        const text = (article.description || "No description available.").split(" ").slice(0, 15).join(" ") + "...";
+
+        blogItem.innerHTML = `
+            <img src="${article.image_url || 'https://via.placeholder.com/200'}" alt="Blog Image">
+            <div class="blog-title">${title}</div>
+            <div class="blog-text">${text}</div>
+            <a href="${article.link}" target="_blank" class="read-more">Read More</a>
+        `;
+
+        card.appendChild(blogItem);
+    });
+}
+
+fetchNews();
+
+        async function fetchNews() {
+            const apiKey = "pub_74064635f37d1fb30faadb5a77cff43b4b744&q=india%20lates";
+            const url = `https://newsdata.io/api/1/news?apikey=pub_74064635f37d1fb30faadb5a77cff43b4b744&q=india%20lates`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const articles = data.results;
+                const card = document.getElementById("slide-box");
+                
+                card.innerHTML = "";
+                articles.slice(0, 20).forEach(article => {
+                    const blogItem = document.createElement("div");
+                    blogItem.classList.add("blog-item");
+                    
+                    const title = article.title.split(" ").slice(0, 20).join(" ") + (article.title.split(" ").length > 20 ? "..." : "");
+                    const text = (article.description || "No description available.").split(" ").slice(0, 15).join(" ") + "...";
+                    
+                    blogItem.innerHTML = `
+                        <img src="${article.image_url || 'https://via.placeholder.com/200'}" alt="Blog Image">
+                        <div class="blog-title">${title}</div>
+                        <div class="blog-text">${text}</div>
+                        <a href="${article.link}" target="_blank" class="read-more">Read More</a>
+                    `;
+                    
+                    card.appendChild(blogItem);
+                });
+            } catch (error) {
+                console.error("Error fetching news:", error);
+            }
+        }
+
+        fetchNews();
+    </script>
+    
+                
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section footer-about">
+                <h3>About</h3>
+                <p>Ghori Town,<br>Islamabad, 44000, Pakistan</p>
+                <p>+92 319 972 9298</p>
+                <p>mindmentor2025@gmail.com</p>
+                <div class="newsletter-input">
+                    <input type="email" placeholder="Enter email address">
+                    <button>Submit</button>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Latest News</h3>
+                <div class="news-item">
+                    <p>Trump New Policies could be game changer for america</p>
+                    <div class="news-date">Mar. 11, 2020  Admin  19</div>
+                </div>
+                <div class="news-item">
+                    <p>Ukrain President went to Saudi Arabia For Meeting with highness</p>
+                    <div class="news-date">Mar. 11, 2020  Admin  19</div>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <div class="footer-links">
+                    <div>
+                        <a href="https://viora4.netlify.app/">Home</a>
+                        <a href="https://viora4-news-blogs.netlify.app/">News</a>
+                        <a href="https://nouman007pro.github.io/privacy.github.io/">Privacy</a>
+                        <a href="https://viora4-blogs.netlify.app/">Blogs</a>
+                        <a href=""></a>
+                    </div>
+                    <div>
+                        <a href="#">Help & Support</a>
+                        <a href="#instagram"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>Copyright ©2025 All rights reserved.</p>
+            <p>This Website Created ♥ by viora4.netlify.app Team</p>
+        </div>
+    </footer>
+    <style>  * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    .footer {
+        background: #2f2f2f;
+        color: #fff;
+        padding: 50px 20px;
+        line-height: 1.6;
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .footer-section h3 {
+        color: #fff;
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+
+    .footer-about p {
+        margin-bottom: 15px;
+    }
+
+    .newsletter-input {
+        display: flex;
+        margin-top: 15px;
+    }
+
+    .newsletter-input input {
+        padding: 10px;
+        border: none;
+        width: 70%;
+    }
+
+    .newsletter-input button {
+        padding: 10px 15px;
+        background: #007bff;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+
+    .news-item {
+        margin-bottom: 20px;
+    }
+
+    .news-date {
+        color: #888;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .footer-links {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .footer-links a {
+        color: #ccc;
+        text-decoration: none;
+        display: block;
+    }
+
+    .footer-links a:hover {
+        color: #fff;
+    }
+
+    .copyright {
+        text-align: center;
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid #444;
+        color: #888;
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</body>
+</html>
