@@ -176,7 +176,7 @@ async function fetchNews() {
 
     while (!success && currentKeyIndex < apiKeys.length) {
         const apiKey = apiKeys[currentKeyIndex];
-        const url = `https://newsdata.io/api/1/news?apikey=pub_74064635f37d1fb30faadb5a77cff43b4b744 `;
+        const url = `https://newsdata.io/api/1/news?apikey=pub_74064635f37d1fb30faadb5a77cff43b4b744&q=asian&language=en  `;
     
         try {
             const response = await fetch(url);
